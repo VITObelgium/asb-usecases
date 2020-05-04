@@ -5,16 +5,18 @@ import os
 import sys
 import subprocess
 import glob
+import zipfile
+import io
 
-# # initial config
-# parcel_dir='../parcel'
-# currcwd=os.getcwd()
-# 
-# # build and get parcel
-# os.chdir(parcel_dir)
-# subprocess.call('{} setup.py {}'.format(sys.executable,' '.join(sys.argv[1:])), shell=True)
-# os.chdir(currcwd)
-
+# initial config
+parcel_dir='../parcel'
+currcwd=os.getcwd()
+  
+# build and get parcel
+os.chdir(parcel_dir)
+subprocess.call('{} setup.py {}'.format(sys.executable,' '.join(sys.argv[1:])), shell=True)
+os.chdir(currcwd)
+ 
 #build this
 tests_require = ['pytest']
 setup(
@@ -37,12 +39,24 @@ setup(
     test_suite='tests'
 )
 
-# # create tar.gz 
-# tar = tarfile.open("dist/asb-collection.tar.gz", "w:gz")
-# fparcel=glob.glob(parcel_dir+'/dist/parcel-*.whl')[0]
-# print('Adding '+fparcel)
-# tar.add(fparcel)
-# 
-# tar.add(glob.glob('dist/asb_usecases-*.whl')[0])
-# 
-# tar.close()
+# create tar.gz by concatenating the wheels
+fparcel=sorted(glob.glob(parcel_dir+'/dist/parcel-*.whl'))[-1]
+print(fparcel)
+fasbuse=sorted(glob.glob('dist/asb_usecases-*.whl'))[-1]
+print(fasbuse)
+with tarfile.open('dist/asb_codes.tar.gz', mode="w:gz") as dest:
+    files={}
+    zparcel=zipfile.ZipFile(fparcel)
+    for i in zparcel.namelist(): files[i]=zparcel 
+    zasbuse=zipfile.ZipFile(fasbuse)
+    for i in zasbuse.namelist(): files[i]=zasbuse 
+    for ifile,iarchive in files.items():
+        b=iarchive.read(ifile)
+        t=tarfile.TarInfo(ifile)
+        t.size=len(b)
+        dest.addfile(t,io.BytesIO(b))        
+    zparcel.close()
+    zasbuse.close()
+
+print('FINISHED')
+

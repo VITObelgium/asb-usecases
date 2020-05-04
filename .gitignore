@@ -1,0 +1,19 @@
+# intellij
+.idea/
+__pycache__/
+
+# eclipse
+.project
+.pydevproject
+
+# python virtualenv
+venv*
+
+.eggs
+build
+dist
+.vscode
+.ipynb_checkpoints
+*.egg-info
+*.so
+*.aux.xml
