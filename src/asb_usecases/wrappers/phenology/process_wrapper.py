@@ -51,25 +51,20 @@ def execute(out_dir, timeseries_json):
 
     logger.info("Starting...")
 
-
-    try:
-        params=PhenologypParams()
-        ts=json.loads(timeseries_json)
-        for iserie in ts['features']:
-            timeseries=pandas.DataFrame(
-                data={
-                    #list(map(lambda x: parse(x['date'], "%Y-%m-%d"), iserie["timeseries"])),
-                    'Times':     [pandas.Timestamp(i[0]).tz_convert(None) for i in iserie["timeseries"]],  
-                    'Greenness': [                                  i[1]  for i in iserie["timeseries"]] # json loads already converted to float
-                }
-            )
-            cp=CropPhenology()
-            iserie['phenology']=cp.extractSeasonDates(timeseries, params)
-            del iserie['timeseries']
-        phenology_json=json.dumps(ts)
-    except Exception as e:
-        phenology_json="ERROR + "+str(e)
-        raise e
+    params=PhenologypParams()
+    ts=json.loads(timeseries_json)
+    for iserie in ts['features']:
+        timeseries=pandas.DataFrame(
+            data={
+                #list(map(lambda x: parse(x['date'], "%Y-%m-%d"), iserie["timeseries"])),
+                'Times':     [pandas.Timestamp(i[0]).tz_convert(None) for i in iserie["timeseries"]],  
+                'Greenness': [                                  i[1]  for i in iserie["timeseries"]] # json loads already converted to float
+            }
+        )
+        cp=CropPhenology()
+        iserie['phenology']=cp.extractSeasonDates(timeseries, params)
+        del iserie['timeseries']
+    phenology_json=json.dumps(ts)
 
     # ...
 
