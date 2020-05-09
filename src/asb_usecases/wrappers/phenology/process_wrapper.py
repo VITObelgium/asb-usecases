@@ -2,7 +2,6 @@
 
 import logging
 import json
-from asb_usecases.logic.phenology.cropphenology import PhenologypParams,CropPhenology
 import pandas
 
 # --------------------------------------------------------------------------------------
@@ -50,6 +49,8 @@ def execute(out_dir, timeseries_json):
     # ----------------------------------------------------------------------------------
 
     logger.info("Starting...")
+
+    from asb_usecases.logic.phenology.cropphenology import PhenologypParams,CropPhenology
 
     params=PhenologypParams()
     ts=json.loads(timeseries_json)

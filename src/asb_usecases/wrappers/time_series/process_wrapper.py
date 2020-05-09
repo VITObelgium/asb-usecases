@@ -2,7 +2,6 @@
 
 import logging
 import json
-from asb_usecases.logic.time_series.openeo_query import TimeSeriesQuery
 
 # --------------------------------------------------------------------------------------
 # Save this code in file "process_wrapper.py" and adapt as indicated in inline comments.
@@ -51,6 +50,8 @@ def execute(out_dir, layer_id, fields_geojson, daterange_json):
     # ----------------------------------------------------------------------------------
 
     logger.info("Starting...")
+
+    from asb_usecases.logic.time_series.openeo_query import TimeSeriesQuery
     
     fields=json.loads(fields_geojson)
     daterange=json.loads(daterange_json)
