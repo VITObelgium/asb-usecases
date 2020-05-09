@@ -2,8 +2,7 @@
 
 import logging
 import json
-from asb_usecases.logic.sentinel_product_query.query_creodias import CreoDiasQuery
-from asb_usecases.logic.sentinel_product_query.query_copernicus import CopernicusQuery
+#import sys
 
 # --------------------------------------------------------------------------------------
 # Save this code in file "process_wrapper.py" and adapt as indicated in inline comments.
@@ -19,6 +18,7 @@ from asb_usecases.logic.sentinel_product_query.query_copernicus import Copernicu
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
+
 def execute(out_dir, fields_geojson, daterange_json):
     """
     Inputs:
@@ -26,7 +26,10 @@ def execute(out_dir, fields_geojson, daterange_json):
     daterange_json -- daterange_json -- 45/User String
 
     Outputs:
+    daterange_json -- daterange_json -- 45/User String
     products_json -- products_json -- 45/User String
+    tilesAndDates_json -- tilesAndDates_json -- 45/User String
+    tilesAndShapes_json -- tilesAndShapes_json -- 45/User String
 
     Main Dependency:
     mep-wps/uc-bundle-1
@@ -41,6 +44,8 @@ def execute(out_dir, fields_geojson, daterange_json):
     """
 
     products_json = None
+    tilesAndDates_json = None
+    tilesAndShapes_json = None
 
     # ----------------------------------------------------------------------------------
     # Insert your own code below.
@@ -52,21 +57,31 @@ def execute(out_dir, fields_geojson, daterange_json):
 
     logger.info("Starting...")
     
+    #sys.path.append('/data/public/banyait/code')
+    from asb_usecases.logic.sentinel_product_query.query_creodias import CreoDiasQuery
+    from asb_usecases.logic.sentinel_product_query.query_copernicus import CopernicusQuery
+
     fields=json.loads(fields_geojson)
     daterange=json.loads(daterange_json)
     
     catalog=CreoDiasQuery()
     #catalog=CopernicusQuery()
 
+    # TODO do not need date range for this, just take today - 1 month
     catalog.query(fields,daterange['start'],daterange['end'],100)
-    products={}
-    products['products']=catalog.getProductIds()
-    products['tilesAndDates']=catalog.getTakenDatesPerTileIds()
+    products=catalog.getProductIds()
+    tilesAndDates=catalog.getTakenDatesPerTileIds()
+    tilesAndShapes=catalog.getShapesPerTileIds()
     products_json=json.dumps(products)
+    tilesAndDates_json=json.dumps(tilesAndDates)
+    tilesAndShapes_json=json.dumps(tilesAndShapes)
 
     # ----------------------------------------------------------------------------------
     # The wrapper must return a dictionary that contains the output parameter values.
     # ----------------------------------------------------------------------------------
     return {
-        "products_json": products_json
+        "daterange_json": daterange_json,
+        "products_json": products_json,
+        "tilesAndDates_json": tilesAndDates_json,
+        "tilesAndShapes_json": tilesAndShapes_json
     }

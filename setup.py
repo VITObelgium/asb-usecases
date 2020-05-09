@@ -30,8 +30,9 @@ setup(
     packages=find_packages(where="src"),
     package_dir={'': 'src'},
     package_data={
-        'resources': []
+        'resources': [ 'tiles.json' ]
     },
+    zip_safe=True,
     setup_requires=['pytest-runner', 'wheel'],
     install_requires=[
     ],
