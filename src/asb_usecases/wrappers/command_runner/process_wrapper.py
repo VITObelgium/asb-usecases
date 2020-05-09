@@ -17,18 +17,21 @@ import subprocess
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-def execute(out_dir, command):
+def execute(out_dir, command, dummy):
     """
     Inputs:
     command -- command -- 45/User String
+    dummy -- dummy -- 45/User String
 
     Outputs:
     cmdoutput -- cmdoutput -- 45/User String
+    dummy -- dummy -- 45/User String
 
     Main Dependency:
     mep-wps/uc-bundle-1
 
     Software Dependencies:
+    openjdk-1.8.0-headless.x86_64
     pywps-4
 
     Processing Resources:
@@ -50,15 +53,16 @@ def execute(out_dir, command):
     logger.info("Starting...")
 
     try:
-        lcommand=command
+        lcommand=command.replace("@OUT_DIR@",str(out_dir))
         result=subprocess.run(lcommand,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,shell=True)
-        cmdoutput=result.stdout.decode('utf-8')
+        cmdoutput+=result.stdout.decode('utf-8')
     except Exception as e:
-        cmdoutput=str(e)
+        cmdoutput+=str(e)
 
     # ----------------------------------------------------------------------------------
     # The wrapper must return a dictionary that contains the output parameter values.
     # ----------------------------------------------------------------------------------
     return {
-        "cmdoutput": cmdoutput
+        "cmdoutput": cmdoutput,
+        "dummy": dummy
     }
