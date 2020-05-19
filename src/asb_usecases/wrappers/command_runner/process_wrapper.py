@@ -31,7 +31,6 @@ def execute(out_dir, command, dummy):
     mep-wps/uc-bundle-1
 
     Software Dependencies:
-    openjdk-1.8.0-headless.x86_64
     pywps-4
 
     Processing Resources:
@@ -41,6 +40,7 @@ def execute(out_dir, command, dummy):
     """
 
     cmdoutput = ""
+    dummy=None
 
     # ----------------------------------------------------------------------------------
     # Insert your own code below.
@@ -54,6 +54,7 @@ def execute(out_dir, command, dummy):
 
     try:
         lcommand=command.replace("@OUT_DIR@",str(out_dir))
+        cmdoutput+="Executing: "+lcommand+'\n'
         result=subprocess.run(lcommand,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,shell=True)
         cmdoutput+=result.stdout.decode('utf-8')
     except Exception as e:

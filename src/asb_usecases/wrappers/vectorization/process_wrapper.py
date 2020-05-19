@@ -3,7 +3,7 @@
 import logging
 import os
 import json
-import sys
+import io
 
 # --------------------------------------------------------------------------------------
 # Save this code in file "process_wrapper.py" and adapt as indicated in inline comments.
@@ -18,6 +18,9 @@ import sys
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+stream = io.StringIO()
+handler = logging.StreamHandler(stream)
+logger.addHandler(handler)
 
 def execute(out_dir, segmentedfiles_json):
     """
@@ -26,6 +29,7 @@ def execute(out_dir, segmentedfiles_json):
 
     Outputs:
     vectorizedfiles_json -- vectorizedfiles_json -- 45/User String
+    exceptionLog -- exceptionLog -- 45/User String
 
     Main Dependency:
     mep-wps/uc-bundle-1
@@ -34,14 +38,11 @@ def execute(out_dir, segmentedfiles_json):
     pywps-4
 
     Processing Resources:
-    ram -- 1
-    disk -- 1
+    ram -- 8
+    disk -- 10
     cpu -- 1
     """
-    #ncpu=1
-    #try: ncpu=int(subprocess.check_output("/usr/bin/nproc"))
-    #except: pass
-    
+
     vectorizedfiles_json = None
 
     # ----------------------------------------------------------------------------------
@@ -52,31 +53,51 @@ def execute(out_dir, segmentedfiles_json):
     # process(es) following the workflow connections.
     # ----------------------------------------------------------------------------------
 
-    logger.info("Starting...")
+    try:
 
-    sys.path.append('/data/public/banyait/code')
-    from parcel.feature.segmentation import raster2polygon
-
-    segmentedfiles=json.loads(segmentedfiles_json)
- 
-    vectorizedfiles=[]
-    for i in range(len(segmentedfiles)):
-        iresults={}
-        for tile,segfile in segmentedfiles[i].items():
-            workdir=os.path.dirname(segfile)
-            outshp=raster2polygon.main(
-                workdir, 
-                tile=tile, 
-                overwrite=True
-            )
-            iresults[tile]=outshp[0]
-        vectorizedfiles.append(iresults)
+        logger.info("Starting...")
+        logger.info("Contents of out_dir: "+str(os.listdir(path=str(out_dir))))
     
-    vectorizedfiles_json=json.dumps(vectorizedfiles)
+        #sys.path.append('/data/public/banyait/code')
+        from parcel.feature.segmentation import raster2polygon
+    
+        logger.info("Loading json input(s)...")
+
+        segmentedfiles=json.loads(segmentedfiles_json)
+     
+        logger.info("Computing...")
+
+        vectorizedfiles=[]
+        for i in range(len(segmentedfiles)):
+            iresults={}
+            for tile,segfile in segmentedfiles[i].items():
+                workdir=os.path.dirname(segfile)
+                outshp=raster2polygon.main(
+                    workdir, 
+                    tile=tile, 
+                    overwrite=True
+                )
+                iresults[tile]=outshp[0]
+            vectorizedfiles.append(iresults)
+
+        logger.info("Contents of out_dir: "+str(os.listdir(path=str(out_dir))))
+        logger.info("Dumping results into json...")
+        
+        vectorizedfiles_json=json.dumps(vectorizedfiles)
+
+        logger.info("Finished...")
+
+    except Exception as e:
+        logger.exception("Exception in wrapper.")
+
+    logging.shutdown()
+    stream.flush()
+    exceptionLog=stream.getvalue()
 
     # ----------------------------------------------------------------------------------
     # The wrapper must return a dictionary that contains the output parameter values.
     # ----------------------------------------------------------------------------------
     return {
-        "vectorizedfiles_json": vectorizedfiles_json
+        "vectorizedfiles_json": vectorizedfiles_json,
+        "exceptionLog": exceptionLog
     }

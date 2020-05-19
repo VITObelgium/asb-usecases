@@ -67,9 +67,6 @@ def execute(out_dir, timeseries_json):
         del iserie['timeseries']
     phenology_json=json.dumps(ts)
 
-    # ...
-
-
     # ----------------------------------------------------------------------------------
     # The wrapper must return a dictionary that contains the output parameter values.
     # ----------------------------------------------------------------------------------
