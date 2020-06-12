@@ -80,7 +80,7 @@ def execute(out_dir, collection_dir, models_dir, tilesAndShapes_json, daterange_
         logger.info("Loading dependencies...")
 
         #sys.path.append('/data/public/banyait/code')
-        from parcel.feature.segmentation.run_segmentation import main_segmentation
+        from parcel.feature.segmentation.segmentation_filebased import main_segmentation
         from asb_usecases.logic.common import polygon2bboxwindow
     
         logger.info("Loading input jsons...")
