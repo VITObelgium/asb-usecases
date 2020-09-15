@@ -1,0 +1,56 @@
+{
+    "immediateDeployment": true,
+	  "mode": "sync",
+	  "inputs": [
+			{
+				"id": "layer_id",
+				"title": "layer_id",
+				"input": {
+					"format": {
+						"mimeType": "text/plain"
+					},
+					"value": "TERRASCOPE_S2_NDVI_V2"
+				}
+			},
+			{
+				"id": "field_geojson",
+				"title": "field_geojson",
+				"input": {
+					"format": {
+						"mimeType": "text/plain"
+					},
+					"value": "{'type':'FeatureCollection','name':'small_field','crs':{'type':'name','properties':{'name':'urn:ogc:def:crs:OGC:1.3:CRS84'}},'features':[{'type':'Feature','properties':{},'geometry':{'type':'Polygon','coordinates':[[[5.008769,51.218417],[5.008769,51.227135],[5.023449,51.227135],[5.023449,51.218417],[5.008769,51.218417]]]}}]}"
+				}
+			},
+			{
+				"id": "daterange_json",
+				"title": "daterange_json",
+				"input": {
+					"format": {
+						"mimeType": "text/plain"
+					},
+					"value": "{'start': '2019-06-01', 'end': '2019-06-10'}"
+				}
+			}
+		],
+		"outputs": [
+			{
+					"id": "ndvicube_json",
+					"title": "ndvicube_json",
+					"format": {
+					    "mimeType": "text/plain"
+					},
+				 "transmissionMode":"value"
+					
+			}
+		],
+    "executionUnit": [
+        {
+            "unit": {
+                "type": "docker",
+                "image": "vito-docker-mep-wps.artifactory.vgt.vito.be/asbuserwps.admin/banyait/ades-test:latest"
+            }
+        }
+    ],
+    "deploymentProfileName": "http://www.opengis.net/profiles/eoc/dockerizedApplication"
+}
