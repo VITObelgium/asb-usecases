@@ -4,16 +4,16 @@ Created on May 1, 2020
 @author: banyait
 '''
 import unittest
-from asb_usecases.wrappers.ades_ndvi_query import process_wrapper
 import pprint
 import json
+from ades_testbed.ades_ndvi_query import process_wrapper
 
 
 class Test(unittest.TestCase):
 
     def testTimeSeries(self):
 
-#{'type':'FeatureCollection','name':'small_field','crs':{'type':'name','properties':{'name':'urn:ogc:def:crs:OGC:1.3:CRS84'}},'features':[{'type':'Feature','properties':{},'geometry':{'type':'Polygon','coordinates':[[[5.008769,51.218417],[5.008769,51.227135],[5.023449,51.227135],[5.023449,51.218417],[5.008769,51.218417]]]}}]}
+#{"type":"FeatureCollection","name":"small_field","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[5.008769,51.218417],[5.008769,51.227135],[5.023449,51.227135],[5.023449,51.218417],[5.008769,51.218417]]]}}]}
         test_field = {
             "type": "FeatureCollection",
             "name": "small_field",

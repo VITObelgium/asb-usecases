@@ -2,10 +2,10 @@
 
 import logging
 import json
-import shapely.geometry
-from shapely import affinity
-import openeo
 import os
+#import uuid
+import base64
+import pathlib
 
 # --------------------------------------------------------------------------------------
 # Save this code in file "process_wrapper.py" and adapt as indicated in inline comments.
@@ -29,6 +29,7 @@ def execute(out_dir, layer_id, field_geojson, daterange_json):
     daterange_json -- daterange_json -- 45/User String
 
     Outputs:
+    status_json -- status_json -- 45/User String
     ndvicube_json -- ndvicube_json -- 45/User String
 
     Main Dependency:
@@ -41,9 +42,8 @@ def execute(out_dir, layer_id, field_geojson, daterange_json):
     ram -- 1
     disk -- 1
     cpu -- 1
+    gpu -- 0
     """
-
-    ndvicube_json = None
 
     # ----------------------------------------------------------------------------------
     # Insert your own code below.
@@ -55,33 +55,92 @@ def execute(out_dir, layer_id, field_geojson, daterange_json):
 
     logger.info("Starting...")
 
-    # find the extents, utm zone in epsg code for lat/lon of centroid and the bounding box polygon
-    field=json.loads(field_geojson)
-    polys = shapely.geometry.GeometryCollection([shapely.geometry.shape(feature["geometry"]).buffer(0) for feature in field["features"]])
-    polys = affinity.scale(polys, 1., 1.)
-    extent = dict(zip(["west", "south", "east", "north"], polys.bounds))
-    extent['crs'] = "EPSG:4326"
-    bboxpoly=shapely.geometry.Polygon.from_bounds(*polys.bounds)
+    status_json = ["definition"]
+    ndvicube_json = ""
 
-    # connection
     openeo_url = 'http://openeo-dev.vgt.vito.be/openeo/1.0.0/'
     openeo_user='banyait'
     openeo_pass='banyait123'
-    eoconn = openeo.connect(openeo_url)
-    eoconn.authenticate_basic(openeo_user, openeo_pass)
+    #logfile="/data/public/"+openeo_user+"/garbage/"+str(uuid.uuid4().hex)+".log"
 
-    # prepare the Sentinel-2 bands via masking by the scene classification layer 
-    daterange=json.loads(daterange_json)
-    ndvi_cube = eoconn.load_collection(layer_id).filter_temporal(daterange['start'],daterange['end']).filter_bbox(**extent)
+    def log_everywhere(msg:str):
+        #print(msg)
+        logger.info(msg)
+        status_json.append(msg)
+        #with open(logfile,"a+") as f: f.write(msg+"\n")
 
-    # download the data
-    temp_file=os.path.join(out_dir,"result.json")
-    ndvi_cube.download(temp_file,format='json')
-    with open(temp_file) as f: ndvicube_json=f.read()
+    try:
+
+        log_everywhere("tryenter")
+
+        def inner_run(layer_id, field_geojson, daterange_json):
+    
+            #log_everywhere("custom:environ")
+            #for k,v in os.environ.items(): log_everywhere("->"+k+"="+str(base64.b64encode(str(v).encode('ascii')),'ascii'))
+            log_everywhere("custom:before:HOME:"+str(os.environ.get('HOME', '<HOME_NOT_FOUND>')))
+            log_everywhere("custom:before:home():"+str(pathlib.Path("").home()))
+            log_everywhere("custom:before:expanduser():"+str(pathlib.Path("").expanduser()))
+            os.environ["HOME"]="/home/asb"
+            log_everywhere("custom:after:HOME:"+str(os.environ.get('HOME', '<HOME_NOT_FOUND>')))
+            log_everywhere("custom:after:home():"+str(pathlib.Path("").home()))
+            log_everywhere("custom:after:expanduser():"+str(pathlib.Path("").expanduser()))
+            
+            #log_everywhere("custom:home:"+str(pathlib.Path("~").expanduser()))
+
+            log_everywhere("started")
+    
+            import shapely.geometry
+            from shapely import affinity
+            import openeo
+    
+            log_everywhere("imported")
+    
+            # find the extents, utm zone in epsg code for lat/lon of centroid and the bounding box polygon
+            field=json.loads(field_geojson)
+            polys = shapely.geometry.GeometryCollection([shapely.geometry.shape(feature["geometry"]).buffer(0) for feature in field["features"]])
+            polys = affinity.scale(polys, 1., 1.)
+            extent = dict(zip(["west", "south", "east", "north"], polys.bounds))
+            extent['crs'] = "EPSG:4326"
+            bboxpoly=shapely.geometry.Polygon.from_bounds(*polys.bounds)
+        
+            log_everywhere("geomlookup")
+    
+            # connection
+            eoconn = openeo.connect(openeo_url)
+            eoconn.authenticate_basic(openeo_user, openeo_pass)
+    
+            log_everywhere("authenticated")
+        
+            # prepare the Sentinel-2 bands via masking by the scene classification layer 
+            daterange=json.loads(daterange_json)
+            ndvi_cube = eoconn.load_collection(layer_id).filter_temporal(daterange['start'],daterange['end']).filter_bbox(**extent)
+        
+            # download the data
+            temp_file=os.path.join(out_dir,"result.json")
+            ndvi_cube.download(temp_file,format='json')
+            
+            log_everywhere("downloaded")
+            
+            with open(temp_file) as f: ndvicube_json=f.read()
+    
+            log_everywhere("finished")
+            
+            return ndvicube_json
+
+        ndvicube_json=inner_run(layer_id, field_geojson, daterange_json)
+                
+    except Exception as e:
+        try:
+            log_everywhere(str(base64.b64encode(str(e).encode('ascii')),'ascii'))
+        except Exception as f:
+            status_json.append(str(base64.b64encode((str(f)+" *** during *** "+str(e)).encode('ascii')),'ascii'))
 
     # ----------------------------------------------------------------------------------
     # The wrapper must return a dictionary that contains the output parameter values.
     # ----------------------------------------------------------------------------------
     return {
+        "status_json": json.dumps(status_json),
         "ndvicube_json": ndvicube_json
     }
+    
+    
