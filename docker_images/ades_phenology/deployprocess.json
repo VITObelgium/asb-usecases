@@ -1,0 +1,93 @@
+{
+    "processDescription": {
+        "process": {
+            "id": "banyait_ades_test",
+            "title": "banyait_ades_test",
+            "abstract": "banyait_ades_test",
+            "version": "v1",
+            "keywords": [
+                "sleeper",
+                "test"
+            ],
+            "inputs": [
+                {
+                    "id": "layer_id",
+                    "title": "layer_id",
+                    "abstract": "layer_id",
+                    "minOccurs": 1,
+                    "maxOccurs": 1,
+                    "input": {
+                        "formats": [
+                            {
+                                "mimeType": "text/plain",
+                                "default": true
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "field_geojson",
+                    "title": "field_geojson",
+                    "abstract": "field_geojson",
+                    "minOccurs": 1,
+                    "maxOccurs": 1,
+                    "input": {
+                        "formats": [
+                            {
+                                "mimeType": "text/plain",
+                                "default": true
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "daterange_json",
+                    "title": "daterange_json",
+                    "abstract": "daterange_json",
+                    "minOccurs": 1,
+                    "maxOccurs": 1,
+                    "input": {
+                        "formats": [
+                            {
+                                "mimeType": "text/plain",
+                                "default": true
+                            }
+                        ]
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "id": "ndvicube_json",
+                    "title": "ndvicube_json",
+                    "output": {
+                        "formats": [
+                            {
+                                "mimeType": "text/plain",
+                                "default": true
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "jobControlOptions": [
+            "async-execute",
+            "sync-execute"
+        ],
+        "outputTransmission": [
+            "reference",
+            "value"
+        ]
+    },
+    "immediateDeployment": true,
+    "executionUnit": [
+        {
+            "unit": {
+                "type": "docker",
+                "image": "vito-docker-mep-wps.artifactory.vgt.vito.be/asbuserwps.admin/banyait/ades-test:latest"
+            }
+        }
+    ],
+    "deploymentProfileName": "http://www.opengis.net/profiles/eoc/dockerizedApplication"
+}

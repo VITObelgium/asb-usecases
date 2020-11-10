@@ -1,0 +1,2 @@
+shapely
+openeo==0.4.4
