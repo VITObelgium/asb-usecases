@@ -1,7 +1,9 @@
 #!/usr/bin/python
 
 import logging
-import subprocess
+import requests
+import json
+import os
 
 # --------------------------------------------------------------------------------------
 # Save this code in file "process_wrapper.py" and adapt as indicated in inline comments.
@@ -14,18 +16,21 @@ import subprocess
 #  - Any empty line or line starting with a '#' character will be ignored.
 # --------------------------------------------------------------------------------------
 
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-def execute(out_dir, command, connector_in):
+def execute(out_dir, daterange, wkt, collection, bands):
     """
     Inputs:
-    command -- command -- 45/User String
-    connector_in -- connector_in -- 45/User String
+    daterange -- daterange -- 44/DateRange
+    wkt -- wkt -- 92/WKT String
+    collection -- collection -- 45/User String
+    bands -- bands -- 45/User String
 
     Outputs:
-    cmdoutput -- cmdoutput -- 45/User String
-    connector_out -- connector_out -- 45/User String
+    products -- products -- 95/Object Type
+    wkt -- wkt -- 92/WKT String
 
     Main Dependency:
     mep-wps/uc-bundle-1
@@ -40,7 +45,7 @@ def execute(out_dir, command, connector_in):
     gpu -- 0
     """
 
-    cmdoutput = ""
+    products = []
 
     # ----------------------------------------------------------------------------------
     # Insert your own code below.
@@ -51,21 +56,43 @@ def execute(out_dir, command, connector_in):
     # ----------------------------------------------------------------------------------
 
     logger.info("Starting...")
-
-    try:
-        lcommand=command.replace("@OUT_DIR@",str(out_dir))
-        cmdoutput+="Executing: "+lcommand+'\n'
-        result=subprocess.run(lcommand,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,shell=True)
-        cmdoutput+=result.stdout.decode('utf-8')
-        logger.info(cmdoutput)
-    except Exception as e:
-        cmdoutput+=str(e)
-        logger.info(cmdoutput)
+    logger.info("Date range: "+daterange)
+    logger.info("WKT string: "+wkt)
+    logger.info("Bands:      "+bands)
+    
+    d=json.loads(daterange)
+    b=json.loads(bands)
+    startIndex=1
+    
+    rs=  'https://services.terrascope.be/catalogue/products'\
+        +'?collection='+collection\
+        +'&accessedFrom=MEP'\
+        +'&start='+d['start']\
+        +'&end='+d['end']\
+        +'&geometry='+wkt
+    while(True):
+        response = requests.get(rs+'&startIndex='+str(startIndex))
+        if response.status_code<200 or response.status_code>=300:
+            raise Exception("Bad response from server: "+response.reason+' ('+str(response.status_code)+')')
+        response = json.loads(response.text)
+        for product in response['features']:
+            p=[]
+            for ibnd in b:
+                for iprod in product['properties']['links']['data']:
+                    if ibnd in iprod['href']:
+                        p.append(iprod['href'])
+            prefix=os.path.commonprefix(p)
+            p=[ i[len(prefix):] for i in p ] 
+            products.append("+".join([prefix]+p).replace("file:///data/", "file:///data/inputs/")) # inside asb docker images data is mounted to dat/inputs
+        startIndex+=response['itemsPerPage']
+        if startIndex>response['totalResults']: break
+                
+    #products=json.dumps(products)
 
     # ----------------------------------------------------------------------------------
     # The wrapper must return a dictionary that contains the output parameter values.
     # ----------------------------------------------------------------------------------
     return {
-        "cmdoutput": cmdoutput,
-        "connector_out": connector_in
+        "products": json.dumps(products),
+        "wkt": wkt
     }
