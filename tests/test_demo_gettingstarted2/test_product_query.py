@@ -24,18 +24,18 @@ class TestProductQuery(unittest.TestCase):
 
     tempfiles=[]
     temppath=Path('/tmp',uuid.uuid4().hex)
-    query_result=""
+    query_result=products
 
-    def test01_PQ(self):
-        self.__class__.query_result=demo_gettingstarted2.product_query.process_wrapper.execute(
-            None,
-            '{"start":"2018-06-01T00:00:00", "end":"2018-06-30T00:00:00"}', 
-            poly_wkt, 
-            'urn:eop:VITO:TERRASCOPE_S2_TOC_V2',
-            '["B04","B08"]'
-        )
-        print(self.__class__.query_result)
-        print(len(json.loads(self.__class__.query_result['products'])))
+#     def test01_PQ(self):
+#         self.__class__.query_result=demo_gettingstarted2.product_query.process_wrapper.execute(
+#             None,
+#             '{"start":"2018-06-01T00:00:00", "end":"2018-06-30T00:00:00"}', 
+#             poly_wkt, 
+#             'urn:eop:VITO:TERRASCOPE_S2_TOC_V2',
+#             '["B04","B08"]'
+#         )
+#         print(self.__class__.query_result)
+#         print(len(json.loads(self.__class__.query_result['products'])))
         
     def test02_NDVI(self):
         os.mkdir(self.temppath)

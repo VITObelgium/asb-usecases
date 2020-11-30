@@ -56,7 +56,9 @@ def execute(out_dir, status, outputFile):
     
         # combine using max
         rxr=None
-        for ifile in glob.glob(str(Path(out_dir,'part_*'))):
+        searchPath=str(Path(str(out_dir).replace('/scratch/','/data/outputs/'),'..').resolve())+"_child/*/outputs/part_*"
+        logger.info("Searching in: "+searchPath)
+        for ifile in glob.glob(searchPath):
             with open(ifile,'r') as f:
                 logger.info("Merging: "+ifile)
                 ds=xarray.open_dataset(ifile, engine='h5netcdf')
@@ -82,6 +84,21 @@ def execute(out_dir, status, outputFile):
         else: 
             outputFile="<EMPTY>"
             logger.info("Combined result is empty, skipping")
+
+# ls
+# /scratch/processor-run-2020_11_27_16_42_05_399463z_banyait_command_runner/wps-run-banyait-command-runner-v3-0ebb4462-a19b-409c-86bc-1d7780ec1881/..
+# wps-run-banyait-command-runner-v3-0ebb4462-a19b-409c-86bc-1d7780ec1881
+# ;
+
+    
+
+# ls
+# /data/outputs/
+# processor-run-2020_11_26_17_30_46_096548z_banyait_demo_gettingstarted
+# processor-run-2020_11_26_17_30_46_096548z_banyait_demo_gettingstarted_child
+# processor-run-2020_11_27_16_34_27_667971z_banyait_demo_gettingstarted
+# processor-run-2020_11_27_16_34_27_667971z_banyait_demo_gettingstarted_child
+# processor-run-2020_11_27_16_42_05_399463z_banyait_command_runner
 
     logger.info("Finished...")
 
