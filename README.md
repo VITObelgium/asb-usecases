@@ -517,7 +517,7 @@ This will bring you to the workflow's page.
 On the left side, in the search bar type *MEP*, this will filter all processes and will show the ones having MEP in the name. 
 Add the latest (v8 in this case) version by hovering over it and clicking the *+* sign that appears.
 
-<img src="resources/demo_gettingstarted/workflow_addquery.png" width="400"/><br><em>Figure: adding the first process to the workflow</em>
+<img src="resources/demo_gettingstarted/workflow_addquery.png" width="800"/><br><em>Figure: adding the first process to the workflow</em>
 
 Similarly, add (always the latest versions) of the processes:
 
@@ -544,7 +544,7 @@ Let's set default values to values that do not change often:
 
 This is done by clicking on the process, filling out the values on the right side and clicking *Save*:
 
-<img src="resources/demo_gettingstarted/workflow_setdefaults.png" width="400"/><br><em>Figure: setting default values for a process</em>
+<img src="resources/demo_gettingstarted/workflow_setdefaults.png" width="800"/><br><em>Figure: setting default values for a process</em>
 
 Similarly, set outputFile for the *collect_and_max* process. 
 This concludes setting up processes and workflows. 
@@ -555,7 +555,7 @@ What remains is to produce some results!
 In workflows select the desired workflow (I named mine *max_ndvi*) and click on *Execute* in the top right corner. 
 This will bring up the inputs page.
 
-<img src="resources/demo_gettingstarted/execute_inputs1.png" width="400"/><br><em>Figure: pre-filled default fields for an execution</em>
+<img src="resources/demo_gettingstarted/execute_inputs1.png" width="800"/><br><em>Figure: pre-filled default fields for an execution</em>
 
 The fields that have defaults already appear pre-filled. 
 Those can be changed of course but let's just fill the empty fields.
@@ -563,15 +563,15 @@ Those can be changed of course but let's just fill the empty fields.
 Note that wkt has to be filled twice: this is because a current limitation that the dynamically splitted processes can't be connected to the processes upstream of the splitter.
 </ins> Once all inputs are in order, click *Execute* to start the computation:
 
-<img src="resources/demo_gettingstarted/execute_inputs2.png" width="400"/><br><em>Figure: all fields completed for an execution</em>
+<img src="resources/demo_gettingstarted/execute_inputs2.png" width="800"/><br><em>Figure: all fields completed for an execution</em>
 
 The progress is displayed in the executions tab:
 
-<img src="resources/demo_gettingstarted/execute_progress.png" width="400"/><br><em>Figure: execution progress</em>
+<img src="resources/demo_gettingstarted/execute_progress.png" width="800"/><br><em>Figure: execution progress</em>
 
 Once it is completed (either green if successful or red if failed), the execution report becomes available:
 
-<img src="resources/demo_gettingstarted/execute_finished.png" width="400"/><br><em>Figure: execution successfully finished</em>
+<img src="resources/demo_gettingstarted/execute_finished.png" width="800"/><br><em>Figure: execution successfully finished</em>
 
 The execution summary will print out various details of the job, such as:
 
@@ -585,13 +585,13 @@ It also provides a link to download results saved to file
 </ins>
 :
 
-<img src="resources/demo_gettingstarted/execute_finished.png" width="400"/><br><em>Figure: execution report</em>
+<img src="resources/demo_gettingstarted/execute_report.png" width="800"/><br><em>Figure: execution report</em>
 
 In this concrete example the MEP query resulted in 5 B4/B8 pairs of images. 
 Those are from the Sentinel tiles 31UES and 31UFS at various days in the range and were processed independently in a parallel fashion, thanks to the dynamic splitter.
 Finally, the max collector produced this gorgeous image from the parts:
 
-<img src="resources/demo_gettingstarted/result_final.png" width="400"/><br><em>Figure: final result, maximum NDVI</em>
+<img src="resources/demo_gettingstarted/result_final.png" width="800"/><br><em>Figure: final result, maximum NDVI</em>
 
 Well done!
 
