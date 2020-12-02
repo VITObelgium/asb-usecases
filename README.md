@@ -70,9 +70,7 @@ We will use the following inputs:
 
 ![Area of interest](resources/demo_gettingstarted/roi.png)
 
-<img src="resources/demo_gettingstarted/roi.png" alt="Area of interest" width="200"/>
-
-<p><img src="resources/demo_gettingstarted/roi.png" alt="Area of interest" width="200"/></p>
+<p><img src="resources/demo_gettingstarted/roi.png" title="Area of interest" width="200"/></p>
 
 #### Dynamic list splitter
 
