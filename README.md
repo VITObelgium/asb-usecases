@@ -72,7 +72,7 @@ We will use the following inputs:
 
 <img src="resources/demo_gettingstarted/roi.png" alt="Area of interest" width="200"/>
 
-<p><img src="resources/demo_gettingstarted/roi.png" alt="Area of interest" /></p>
+<p><img src="resources/demo_gettingstarted/roi.png" alt="Area of interest" width="200"/></p>
 
 #### Dynamic list splitter
 
