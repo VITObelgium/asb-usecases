@@ -51,6 +51,7 @@ As mentioned, one does not have to implement the search, rather reuse the query_
 It can be used to search in the Terrascope database [terrascope.be](terrascope.be) provided by VITO.
 Given the area of interest in WKT string, the date range, collection id and band names it returns a list of strings, which describe the location of the images on the file system.
 
+<ins>
 *Due to the current limitation on the length of the strings in the list (imposed by the splitter), the strings are encoded as follows:*
 
     /path/to/data/S2B_20180605T105029_31UFS_TOC-B0+4_10M_V200.tif+8_10M_V200.tif
@@ -60,6 +61,7 @@ Given the area of interest in WKT string, the date range, collection id and band
 
     /path/to/data/S2B_20180605T105029_31UFS_TOC-B04_10M_V200.tif
     /path/to/data/S2B_20180605T105029_31UFS_TOC-B08_10M_V200.tif
+</ins>
 
 We will use the following inputs:
 
@@ -68,12 +70,7 @@ We will use the following inputs:
 * WKT: POLYGON((4.665785 51.110600, 4.350147 51.111254, 4.344939 50.990762, 4.664744 50.990762, 4.665785 51.110600)) (small area around the Belgian city called Mechelen)
 * bands: ["B04","B08"] (red and NIR bands as alread mentioned before)
 
-<p><img src="resources/demo_gettingstarted/roi.png" width="400"/>
-    <br>
-    <em>Area of interest</em>	
-</p>
-
-<ins>asdgarwdrgsdsh</ins> 
+<img src="resources/demo_gettingstarted/roi.png" width="400"/><br><em>Area of interest</em>
  
 #### Dynamic list splitter
 
