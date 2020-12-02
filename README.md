@@ -51,19 +51,25 @@ As mentioned, one does not have to implement the search, rather reuse the query_
 It can be used to search in the Terrascope database [terrascope.be](terrascope.be) provided by VITO.
 Given the area of interest in WKT string, the date range, collection id and band names it returns a list of strings, which describe the location of the images on the file system.
 
-<span style="color:red"> TESTCOLOR </span>
-
-Due to the current limitation on the length of the strings in the list (imposed by the splitter), the strings are encoded as follows:
+*Due to the current limitation on the length of the strings in the list (imposed by the splitter), the strings are encoded as follows:*
 
     /path/to/data/S2B_20180605T105029_31UFS_TOC-B0+4_10M_V200.tif+8_10M_V200.tif
 
-This string has to be split at '+' characters and the first entry is the common prefix of the rest of the array.
-In this case this represents a list of two files:
+*This string has to be split at '+' characters and the first entry is the common prefix of the rest of the array.*
+*In this case this represents a list of two files:*
 
     /path/to/data/S2B_20180605T105029_31UFS_TOC-B04_10M_V200.tif
     /path/to/data/S2B_20180605T105029_31UFS_TOC-B08_10M_V200.tif
 
-LIST INPUTS
+We will use the following inputs:
+
+* collection: urn:eop:VITO:TERRASCOPE_S2_TOC_V2  (Sentinel2 L2A images mirrored by Terrascope)
+* date range: {"start":"2018-06-25T00:00:00", "end":"2018-06-30T00:00:00"} (JSON string covering just a few days)
+* WKT: POLYGON((4.665785 51.110600, 4.350147 51.111254, 4.344939 50.990762, 4.664744 50.990762, 4.665785 51.110600)) (small area around the Belgian city called Mechelen)
+* bands: ["B04","B08"] (red and NIR bands as alread mentioned before)
+
+![Area of interes](/resources/demo_gettingstarted/roi.png)
+<img src="/resources/demo_gettingstarted/roi.png" alt="Area of interest" width="200"/>
 
 #### Dynamic list splitter
 
@@ -76,7 +82,16 @@ For example if 10 cpus available and each process is using 2, but the split yiel
 This process has to be developed since it contains our 'business logic'. 
 Let's implement it in the following fashion:
 * load B4 and B8 into xarrays
-* using the area of interest WKT, restrict  
+* using the area of interest WKT, restrict the calculation to the bounding box
+* compute NDIV
+* save to temporary file
+
+The main source code of any process is called process_wrapper.py
+
+ASB provides a convenient way to generate the template
+
+
+requirements
 
 #### Joiner
 
