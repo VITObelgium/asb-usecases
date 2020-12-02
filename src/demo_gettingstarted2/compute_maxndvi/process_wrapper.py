@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import logging
-import json
 import shapely.wkt
 import pyproj
 import xarray
