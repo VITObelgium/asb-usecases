@@ -68,9 +68,19 @@ We will use the following inputs:
 * WKT: POLYGON((4.665785 51.110600, 4.350147 51.111254, 4.344939 50.990762, 4.664744 50.990762, 4.665785 51.110600)) (small area around the Belgian city called Mechelen)
 * bands: ["B04","B08"] (red and NIR bands as alread mentioned before)
 
-![Area of interest](resources/demo_gettingstarted/roi.png)
-
 <p><img src="resources/demo_gettingstarted/roi.png" title="Area of interest" width="400"/></p>
+
+
+
+
+<style type="text/css">
+text
+redtext {color:red;}
+text
+blutext {color:blue;}
+text
+</style>
+
 
 #### Dynamic list splitter
 
