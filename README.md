@@ -567,9 +567,42 @@ Note that wkt has to be filled twice: this is because a current limitation that 
 
 The progress is displayed in the executions tab:
 
-<img src="resources/demo_gettingstarted/execute_progress.png" width="400"/><br><em>Figure: all fields completed for an execution</em>
+<img src="resources/demo_gettingstarted/execute_progress.png" width="400"/><br><em>Figure: execution progress</em>
 
 Once it is completed (either green if successful or red if failed), the execution report becomes available:
 
+<img src="resources/demo_gettingstarted/execute_finished.png" width="400"/><br><em>Figure: execution successfully finished</em>
+
+The execution summary will print out various details of the job, such as:
+
+* All outputs of all processes
+* Execution graph
+* Timing of the processes
+
+It also provides a link to download results saved to file 
+<ins>
+(It is broken right now, have to grab it from the user VM!)
+</ins>
+:
+
+<img src="resources/demo_gettingstarted/execute_finished.png" width="400"/><br><em>Figure: execution report</em>
+
+In this concrete example the MEP query resulted in 5 B4/B8 pairs of images. 
+Those are from the Sentinel tiles 31UES and 31UFS at various days in the range and were processed independently in a parallel fashion, thanks to the dynamic splitter.
+Finally, the max collector produced this gorgeous image from the parts:
 
 <img src="resources/demo_gettingstarted/result_final.png" width="400"/><br><em>Figure: final result, maximum NDVI</em>
+
+Well done!
+
+## Summary
+
+What we have done:
+* developed two processes for calculating NDVI and it's max combiner
+* using the above two and also reusing some existing processes, built a worklfow for obtaining max NDVI 
+* successfully run the calculation using that workflow
+
+What we learned:
+* how to create processes
+* how to create workflows
+* how to execute workflows
