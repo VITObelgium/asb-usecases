@@ -73,18 +73,7 @@ We will use the following inputs:
     <em>Area of interest</em>	
 </p>
 
-
-
-
-<style type="text/css">
-text
-redtext {color:red;}
-text
-blutext {color:blue;}
-text
-</style>
-
- <p>My mother has <span style="color:blue">blue</span> eyes.</p> 
+<ins>asdgarwdrgsdsh</ins> 
  
 #### Dynamic list splitter
 
