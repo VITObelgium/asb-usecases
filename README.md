@@ -91,12 +91,27 @@ Let's implement it in the following fashion:
 * compute NDIV
 * save to temporary file
 
-The main source code of any process is called process_wrapper.py
+The main source code of any process is called process_wrapper.py, this is a Python script with a special layout that is parsed and understood by the system. 
+ASB provides a convenient way to generate the template, go to Processes -> New wrapper:
 
-ASB provides a convenient way to generate the template
+<img src="resources/demo_gettingstarted/ndvicalc_gotowrapper.png" width="400"/><br><em>Area of interest</em>
+
+Then setup the inputs (1), outputs (2), select the dependencies (3) and resources (4) as shown:
+
+<img src="resources/demo_gettingstarted/ndvicalc_setupwrapper.png" width="400"/><br><em>Area of interest</em>
+
+Click on download and save the file at a suitable location. 
+This produces an empty wrapper to start with.
+Because we are going to save the results in NetCDF format, we will need an extra dependency that is not in the PyWPS4 group. 
+Next to the wrapper, save a file called requirements.txt. This file should have a single line: h5netcdf.
 
 
-requirements
+
+
+
+
+
+
 
 #### Joiner
 
