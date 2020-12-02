@@ -555,7 +555,7 @@ What remains is to produce some results!
 In workflows select the desired workflow (I named mine *max_ndvi*) and click on *Execute* in the top right corner. 
 This will bring up the inputs page.
 
-<img src="resources/demo_gettingstarted/execute_inputs1.png" width="400"/><br><em>Figure: default fields for an execution</em>
+<img src="resources/demo_gettingstarted/execute_inputs1.png" width="400"/><br><em>Figure: pre-filled default fields for an execution</em>
 
 The fields that have defaults already appear pre-filled. 
 Those can be changed of course but let's just fill the empty fields.
@@ -565,4 +565,11 @@ Note that wkt has to be filled twice: this is because a current limitation that 
 
 <img src="resources/demo_gettingstarted/execute_inputs2.png" width="400"/><br><em>Figure: all fields completed for an execution</em>
 
-Ex
+The progress is displayed in the executions tab:
+
+<img src="resources/demo_gettingstarted/execute_progress.png" width="400"/><br><em>Figure: all fields completed for an execution</em>
+
+Once it is completed (either green if successful or red if failed), the execution report becomes available:
+
+
+<img src="resources/demo_gettingstarted/result_final.png" width="400"/><br><em>Figure: final result, maximum NDVI</em>
