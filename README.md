@@ -528,6 +528,41 @@ Similarly, add (always the latest versions) of the processes:
 
 The canvas should look like this:
 
-<img src="resources/demo_gettingstarted/workflow_allprocesses.png" width="400"/><br><em>Figure: adding the first process to the workflow</em>
+<img src="resources/demo_gettingstarted/workflow_allprocesses.png" width="400"/><br><em>Figure: processes</em>
 
+Next, connect the inputs to the outputs, this is done by click and drag by the green dots:
 
+<img src="resources/demo_gettingstarted/workflow_addconnectors.png" width="400"/><br><em>Figure: connected workflow</em>
+
+The leftover free inputs have to be specified. 
+This can be done either by filling out the missing fields when executing the workflow or specifying default values. 
+Let's set default values to values that do not change often:
+
+* collection: urn:eop:VITO:TERRASCOPE_S2_TOC_V2
+* bands: ["B04","B08"]
+* outputFile: mergedResults.nc
+
+This is done by clicking on the process, filling out the values on the right side and clicking *Save*:
+
+<img src="resources/demo_gettingstarted/workflow_setdefaults.png" width="400"/><br><em>Figure: setting default values for a process</em>
+
+Similarly, set outputFile for the *collect_and_max* process. 
+This concludes setting up processes and workflows. 
+What remains is to produce some results!
+
+### Executing the workflow
+
+In workflows select the desired workflow (I named mine *max_ndvi*) and click on *Execute* in the top right corner. 
+This will bring up the inputs page.
+
+<img src="resources/demo_gettingstarted/execute_inputs1.png" width="400"/><br><em>Figure: default fields for an execution</em>
+
+The fields that have defaults already appear pre-filled. 
+Those can be changed of course but let's just fill the empty fields.
+<ins>
+Note that wkt has to be filled twice: this is because a current limitation that the dynamically splitted processes can't be connected to the processes upstream of the splitter.
+</ins> Once all inputs are in order, click *Execute* to start the computation:
+
+<img src="resources/demo_gettingstarted/execute_inputs2.png" width="400"/><br><em>Figure: all fields completed for an execution</em>
+
+Ex
