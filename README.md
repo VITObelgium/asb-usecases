@@ -49,7 +49,8 @@ The product_query, dynamic list splitter and the oin processes will be reused.
 
 As mentioned, one does not have to implement the search, rather reuse the query_product process developed by VITO.
 It can be used to search in the Terrascope database [terrascope.be](terrascope.be) provided by VITO.
-Given the area of interest in WKT string, the date range, collection id and band names it returns a list of strings, which describe the location of the images on the file system.
+Given the area of interest in WKT string, the date range, collection id and band names it returns a list of file names (where they are in the file system).
+These are the individual images that overlap with the area of interest within the date range.
 
 <br>
 <ins>
@@ -75,7 +76,7 @@ We will use the following inputs:
 * bands: ["B04","B08"] (red and NIR bands as alread mentioned before)
 
 <img src="resources/demo_gettingstarted/roi.png" width="400"/><br><em>Figure: Area of interest</em>
- 
+
 #### Dynamic list splitter
 
 This is also a builtin process that takes an array of strings as json. It splits up the array and indepenently launches the next process in the chain. 
@@ -108,7 +109,7 @@ This produces an empty wrapper to start with.
 Because we are going to save the results in NetCDF format, we will need an extra dependency that is not in the PyWPS4 group. 
 Next to the wrapper, save a file called requirements.txt. This file should have a single line: h5netcdf.
 
-Open the file in your favorite editor and copy paste the code from the following snippet:
+Open the file in your favorite editor and copy paste the following code:
 
     #!/usr/bin/python
     
@@ -364,9 +365,18 @@ When that is finished, it can be used in any workflow.
 Again, this is a builtin pocess. 
 It waits until all the upstream dynamic processes finish and puts 'success' on its single output in case of no failures.
 
-#### collect_and_max
+#### Maximum collector
 
-With a bit of modifications this process could be generalized into a 'temporal max' function.
+This process will lookup the outputs of the *compute_ndvi*s on the file system, and combine them by always choosing the maximum value at the same pixels.
+The procedure of creating this process is very similar to the one of *compute_ndvi*, following that:
+
+* create an empty process wrapper with:
+  * Inputs: status and outputFile, both user strings. Status will receive the information from the joiner if all went well so far and outputFile will b store the filename of the merged result.
+  * Outputs: result (outputfile/fileName)
+  * same resources as *compute_ndvi*
+* we will also need the same *requirements.txt* file
+
+The complete process wrapper for the collector will look like this:
 
     #!/usr/bin/python
     
@@ -441,7 +451,7 @@ With a bit of modifications this process could be generalized into a 'temporal m
                     logger.info("X-range: "+str(rxr.x.min().values)+" ... "+str(rxr.x.max().values));
                     logger.info("Y-range: "+str(rxr.y.min().values)+" ... "+str(rxr.y.max().values));
         
-            # write to netcdf, with switching x&y (for example QGIS displays the image otherwise rotated)
+            # write to netcdf
             if rxr is not None:
                 if rxr.dims[-2]=='x' and rxr.dims[-1]=='y':
                     l=list(rxr.dims[:-2])
@@ -462,5 +472,39 @@ With a bit of modifications this process could be generalized into a 'temporal m
             "result": outputFile
         }
 
+Where the first part is looking up the inputs on the file system.
+<ins>
+When a process finishes, it's out_dir contents are moved to a permanent storage. The line setting *searchPath* computes the permanent path from *out\_dir*.
+</ins>
+Note that *part_* prefix in the file name:
+
+    searchPath=str(Path(str(out_dir).replace('/scratch/','/data/outputs/'),'..').resolve())+"_child/*/outputs/part_*"
+
+The next is the actual max merging. The glob function does the wildcard search over *searchPath*. 
+Xarray provides an easy to use functionality to merge by coordinate values on partially overlapping domains (concat).
+Collector uses that when appending the first chunk with the subsequent ones, while taking their maximum (calling max in band direction).  
+
+    for ifile in glob.glob(searchPath):
+        with open(ifile,'r') as f:
+            ds=xarray.open_dataset(ifile, engine='h5netcdf')
+            iarr=ds.to_array(dim='band')
+            if rxr is None: 
+                rxr=iarr
+                rxr=rxr.assign_coords({'band':['maxNDVI']})
+            else:
+                rxr=xarray.concat([rxr,iarr], dim='band',join='outer').max(dim='band').expand_dims({'band':['maxNDVI']})
+
+The rest is really just saving the result to file or communicate if the result is empty:
+
+    if rxr is not None:
+        if rxr.dims[-2]=='x' and rxr.dims[-1]=='y':
+            l=list(rxr.dims[:-2])
+            rxr=rxr.transpose(*(l+['y','x']))
+        result=rxr.to_dataset('band')
+        result.to_netcdf(str(Path(out_dir,outputFile)), engine='h5netcdf')    
+    else: 
+        outputFile="<EMPTY>"
+
+Note: with a bit of modifications this process could be turned into a general 'temporal max' function, which could take other inputs rather than the ones generated by *compute NDVI*.
 
 ### Assembling the workflow
