@@ -84,7 +84,8 @@ blutext {color:blue;}
 text
 </style>
 
-
+ <p>My mother has <span style="color:blue">blue</span> eyes.</p> 
+ 
 #### Dynamic list splitter
 
 This is also a builtin process that takes an array of strings as json. It splits up the array and indepenently launches the next process in the chain. 
