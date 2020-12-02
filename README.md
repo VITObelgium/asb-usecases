@@ -51,19 +51,21 @@ As mentioned, one does not have to implement the search, rather reuse the query_
 It can be used to search in the Terrascope database [terrascope.be](terrascope.be) provided by VITO.
 Given the area of interest in WKT string, the date range, collection id and band names it returns a list of strings, which describe the location of the images on the file system.
 
-<br><ins>
+<br>
+<ins>
 
-*Due to the current limitation on the length of the strings in the list (imposed by the splitter), the strings are encoded as follows:*
+Due to the current limitation on the length of the strings in the list (imposed by the splitter), the strings are encoded as follows:
 
     /path/to/data/S2B_20180605T105029_31UFS_TOC-B0+4_10M_V200.tif+8_10M_V200.tif
 
-*This string has to be split at '+' characters and the first entry is the common prefix of the rest of the array.*
-*In this case this represents a list of two files:*
+This string has to be split at '+' characters and the first entry is the common prefix of the rest of the array.
+In this case this represents a list of two files:
 
     /path/to/data/S2B_20180605T105029_31UFS_TOC-B04_10M_V200.tif
     /path/to/data/S2B_20180605T105029_31UFS_TOC-B08_10M_V200.tif
 
-</ins><br>
+</ins>
+<br>
 
 We will use the following inputs:
 
