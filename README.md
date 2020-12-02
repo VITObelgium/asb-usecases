@@ -72,6 +72,8 @@ We will use the following inputs:
 
 <img src="resources/demo_gettingstarted/roi.png" alt="Area of interest" width="200"/>
 
+<p><img src="resources/demo_gettingstarted/roi.png" alt="Area of interest" /></p>
+
 #### Dynamic list splitter
 
 This is also a builtin process that takes an array of strings as json. It splits up the array and indepenently launches the next process in the chain. 
