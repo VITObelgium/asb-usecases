@@ -55,7 +55,7 @@ Login to the portal: [https://mep-wps.vgt.vito.be](https://mep-wps.vgt.vito.be).
 
 As mentioned, one does not have to implement the search, rather reuse the query_product process developed by VITO.
 It can be used to search in the Terrascope database [terrascope.be](terrascope.be).
-Given the area of interest in WKT string, the date range, collection id and band names: returns a double list of file names (where those are on the file system).
+Given the area of interest in WKT string, the date range, collection id and band names: returns the list of file names (where those are on the file system).
 These are the individual images that overlap with the area of interest within the date range.
 
 We will use the following inputs:
@@ -67,16 +67,22 @@ We will use the following inputs:
 
 <img src="resources/demo_gettingstarted/roi.png" width="400"/><br><em>Figure: Area of interest</em>
 
-
 <br>
 <ins>
 
-Due to the current limitation on the length of the strings in the list (imposed by the splitter), the strings are encoded as follows:
+The straightforward approach for the query would be to return an array JSON-ized arrays (for B4 and B8), something similar to:
+
+    [
+      '["/path/to/data/S2B_20180605T105029_31UFS_TOC-B04_10M_V200.tif","/path/to/data/S2B_20180605T105029_31UFS_TOC-B08_10M_V200.tif"]',
+      ...
+    ]
+
+Unfortunately, due to the current limitation on the length of the strings in the list imposed by the splitter, the strings have to be encoded as follows:
 
     /path/to/data/S2B_20180605T105029_31UFS_TOC-B0+4_10M_V200.tif+8_10M_V200.tif
 
 This string has to be split at '+' characters and the first entry is the common prefix of the rest of the array.
-In this case this represents a list of two files:
+This represents the same list of the two files as above:
 
     /path/to/data/S2B_20180605T105029_31UFS_TOC-B04_10M_V200.tif
     /path/to/data/S2B_20180605T105029_31UFS_TOC-B08_10M_V200.tif
@@ -86,9 +92,8 @@ In this case this represents a list of two files:
 
 #### Dynamic list splitter
 
-This is also a builtin process that takes an array of strings as json. It splits up the array and indepenently launches the next process in the chain. 
-Note that the splitter is a smart process in terms of resource management. 
-For example if 10 cpus available and each process is using 2, but the split yields to 50 processes: the splitter ensures that 5 processes willbe running concurrently.
+This is also a builtin process that takes an array of strings as json. It splits up the array and indepenently launches instances of the following process in the chain. 
+Note that the splitter is a smart process in terms of resource management: for example if 10 cpus available and each process is using 2, but the split yields to 50 processes: the splitter ensures that at a time 5 processes will be running concurrently.
 
 #### Compute NDVI
 
@@ -96,14 +101,14 @@ This process has to be developed since it contains our 'business logic'.
 Let's implement it in the following fashion:
 * load B4 and B8 into xarrays
 * using the area of interest WKT, restrict the calculation to the bounding box
-* compute NDIV
-* save to temporary file
+* compute NDVI
+* save the resulting part into a temporary file
 
-The main source code of any process is called process_wrapper.py, this is a Python script with a special layout that is parsed and understood by the system. 
+The main source code of any process is called *process_wrapper.py*, this is a Python script with a special layout that is parsed and understood by ASB. 
 
 ##### Creating the process wrapper
 
-ASB provides a convenient way to generate a template interface, go to Processes -> New wrapper:
+ASB provides a convenient way to generate a template, go to **Processes -> New wrapper**:
 
 <img src="resources/demo_gettingstarted/ndvicalc_gotowrapper.png" width="400"/><br><em>Figure: wrapper creation</em>
 
