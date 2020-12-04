@@ -112,16 +112,16 @@ ASB provides a convenient way to generate a template, go to **Processes -> New w
 
 <img src="resources/demo_gettingstarted/ndvicalc_gotowrapper.png" width="400"/><br><em>Figure: wrapper creation</em>
 
-Then setup the inputs (1), outputs (2), select the dependencies (3) and resources (4) as shown:
+Then **setup the inputs (1), outputs (2), select the dependencies (3) and resources (4)** as shown:
 
 <img src="resources/demo_gettingstarted/ndvicalc_setupwrapper.png" width="400"/><br><em>Figure: wrapper setup</em>
 
-Click on download and save the file at a suitable location. 
+Click on **Download** and save the file at a suitable location. 
 This produces an empty wrapper to start with.
-Because we are going to save the results in NetCDF format, we will need an extra dependency that is not in the PyWPS4 group. 
-Next to the wrapper, save a file called requirements.txt. This file should have a single line: h5netcdf.
+Because we are going to save the results in NetCDF format, we will need an extra dependency that is not yet in the PyWPS4 software group. 
+Next to the wrapper, **save a file** called *requirements.txt*. This file should have a single line: h5netcdf.
 
-Open the file in your favorite editor and copy paste the following code:
+Open the file in your favorite editor and **copy-paste the body between the two logger calls 'starting' and 'finished'**. The complete contents should look like as follows:
 
     #!/usr/bin/python
     
@@ -217,14 +217,9 @@ Open the file in your favorite editor and copy paste the following code:
             # compute NDVI
             NDVI=(B8-B4)/(B8+B4)
         
-            # cosmetics being able to save to netcdf
+            # cosmetics in order for being able to save to netcdf
             NDVI.attrs['crs']=B4i.attrs['crs']
             NDVI=NDVI.assign_coords({'band':["NDVI"]})
-    
-            # info
-            logger.info("Shape:   "+str(NDVI.shape));
-            logger.info("X-range: "+str(NDVI.x.min().values)+" ... "+str(NDVI.x.max().values));
-            logger.info("Y-range: "+str(NDVI.y.min().values)+" ... "+str(NDVI.y.max().values));
         
             # Save to file
             outFile=str(Path(out_dir,"part_"+uuid.uuid4().hex))
@@ -249,14 +244,14 @@ Open the file in your favorite editor and copy paste the following code:
         }
 
 
-Let's now walk through the details and explain what each line does:
+Let's go through the details and explain what each line does:
 
 ###### Interfacing to ASB
 
-This was generated as part of the template. When ASB executes this process, it looks for the function called *execute*.
-The docstring serves as a metadata to define the inputs, outputs, and the resources the docker image should have.
-The execute function's input and outputs (returning dict) should be in sync with this metadata. 
-The only input parameter not listed is *out_dir*: this is the path for scratch space.
+This was generated as part of the template. When ASB executes this process, it looks for the function called *execute(...)*.
+The docstring serves as metadata to define the inputs, outputs, and the resources the docker image should have.
+The execute function's inputs and outputs (which returns a dictionary of strings) should be in sync with this metadata. 
+The only input parameter not listed is *out_dir*: this is a path to a scratch space that will be preserved between processes.
 
 All inputs and outputs are strings, regardless of metadata types.
 
@@ -299,13 +294,13 @@ The query's outputs are converted back to file names:
     logger.info("Band B04: "+prodB4)
     logger.info("Band B08: "+prodB8)
 
-Lazy load the datasets to access the crs:
+Lazy load the datasets to access the coordinate system *crs*:
 
     # open the files
     B4i=xarray.open_rasterio(prodB4)
     B8i=xarray.open_rasterio(prodB8)
 
-Converting the area of interest into the data's crs:
+Convert the area of interest into the data's crs:
     
     # convert area of interest into the desired coordinate system
     geom=shapely.wkt.loads(wkt)
@@ -335,60 +330,62 @@ And convert it to floating point:
 
 ###### Actual NDVI calculation:
 
-As simple as this:
+As simple as:
 
     # compute NDVI
     NDVI=(B8-B4)/(B8+B4)
 
-###### Saving this part to out_dir:
+###### Saving the part to out_dir:
 
-Currently xarray supports to save DataSets (not DataArrays) to file, which needs a little preparation.
+Currently xarray supports to save DataSets (not DataArrays) to file, which then needs a little preparation.
 
     # cosmetics being able to save to netcdf
     NDVI.attrs['crs']=B4i.attrs['crs']
     NDVI=NDVI.assign_coords({'band':["NDVI"]})
 
-Files are saved to *out_dir* under a random name starting with *part_*:
+Each NDVI process will save to *out_dir* using a random name starting with *part_*:
 
     # Save to file
     outFile=str(Path(out_dir,"part_"+uuid.uuid4().hex))
     result=NDVI.to_dataset('band')
     result.to_netcdf(outFile, engine='h5netcdf')
 
+This concludes developing the actual code of the NDVI calculator. The next step is to upload it to ASB.
+
 ##### Generating the process
 
-Go to Processes -> New Process and create a new process similar to:
+Go to **Processes -> New Process** and create a new process similar to:
 
 <img src="resources/demo_gettingstarted/ndvicalc_createprocess.png" width="400"/><br><em>Figure: creating the process</em>
 
-This will bring you to the process's page. Click twice (asks for a confirmation) on *New version*, then drag and drop both process wrapper and requirements files:
+This will bring you to the process's page. **Click twice** (asks for a confirmation) on **New version**, then **drag and drop** both process wrapper and requirements files:
 
 <img src="resources/demo_gettingstarted/ndvicalc_uploadprocess.png" width="400"/><br><em>Figure: uploading the wrapper and requirements</em>
 
-Next the process needs to be build (assembling the docker container) by clicking on the build tab and *Build*:
+Next the process needs to be built (assembling the docker container), this is done by **clicking on the build tab** and **Build**:
 
 <img src="resources/demo_gettingstarted/ndvicalc_buildprocess.png" width="400"/><br><em>Figure: building the process</em>
 
-When the progress becomes green, the process is ready to be released by clicking on *Build and release*. 
-When that is finished, it can be used in any workflow. 
+When the progress becomes green, the process is ready to be released via **Build and release**. 
+When that is finished (progress becomes green again), the process is ready to be used in workflows. 
 
 #### Joiner
 
-Again, this is a builtin pocess. 
-It waits until all the upstream dynamic processes finish and puts 'success' on its single output in case of no failures.
+Once again, this is a builtin pocess. 
+It waits until all the upstream dynamic processes finish and puts 'success' on its single output if there were no failures.
 
 #### Maximum collector
 
 This process will lookup the outputs of the *compute_ndvi*s on the file system, and combine them by always choosing the maximum value at the same pixels.
-The procedure of creating this process is very similar to the one of *compute_ndvi*, following that:
+The procedure of creating this process is very similar to the one of *compute_ndvi*:
 
-* create an empty process wrapper with:
-  * Inputs: status and outputFile, both user strings. Status will receive the information from the joiner if all went well so far and outputFile will b store the filename of the merged result.
-  * Outputs: result (outputfile/fileName)
+* **create an empty process wrapper** with:
+  * Inputs: *status* and *outputFile*, both user strings. Status will receive the information from the joiner if all went well so far and outputFile will store the filename of the merged result.
+  * Outputs: *result* user string (outputFile repeated)
   * same resources as *compute_ndvi*
 * we will also need the same *requirements.txt* file
 
-The complete process wrapper for the collector will look like this:
+The complete code process wrapper for the collector looks like this:
 
     #!/usr/bin/python
     
@@ -459,9 +456,6 @@ The complete process wrapper for the collector will look like this:
                         rxr=rxr.assign_coords({'band':['maxNDVI']})
                     else:
                         rxr=xarray.concat([rxr,iarr], dim='band',join='outer').max(dim='band').expand_dims({'band':['maxNDVI']})
-                    logger.info("Shape:   "+str(rxr.shape));
-                    logger.info("X-range: "+str(rxr.x.min().values)+" ... "+str(rxr.x.max().values));
-                    logger.info("Y-range: "+str(rxr.y.min().values)+" ... "+str(rxr.y.max().values));
         
             # write to netcdf
             if rxr is not None:
@@ -488,13 +482,13 @@ Where the first part is looking up the inputs on the file system.
 <ins>
 When a process finishes, it's out_dir contents are moved to a permanent storage. The line setting *searchPath* computes the permanent path from *out\_dir*.
 </ins>
-Note that *part_* prefix in the file name:
+Note the *part_* prefix in the file name:
 
     searchPath=str(Path(str(out_dir).replace('/scratch/','/data/outputs/'),'..').resolve())+"_child/*/outputs/part_*"
 
 The next is the actual max merging. The glob function does the wildcard search over *searchPath*. 
-Xarray provides an easy to use functionality to merge by coordinate values on partially overlapping domains (concat).
-Collector uses that when appending the first chunk with the subsequent ones, while taking their maximum (calling max in band direction).  
+Xarray provides an easy to use functionality to merge by coordinate values on partially overlapping domains (concat(...)).
+Collector uses that when appending the first chunk with the subsequent ones, while taking their maximum (by calling max(...) in band direction).  
 
     for ifile in glob.glob(searchPath):
         with open(ifile,'r') as f:
@@ -517,7 +511,7 @@ The rest is really just saving the result to file or communicate if the result i
     else: 
         outputFile="<EMPTY>"
 
-Note: with a bit of modifications this process could be turned into a general 'temporal max' function, which could take other inputs rather than the ones generated by *compute NDVI*.
+Note: with a bit of modifications this process could easily be turned into a general 'temporal maximum' function, which could take other inputs rather than the Sentinel-2 ones generated by *compute NDVI*.
 
 ### Building the workflow
 
