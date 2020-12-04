@@ -2,24 +2,26 @@
 
 ## Getting Started Tutorial
 
-This tutorial will walk through the creation and execution of a simple workflow in the Automated Service Builder (ASB), which can serve as a starting template for future workflows.
-
 ### Introduction
 
-The ASB interface is built around the concept of creating processes and workflows. 
-A process can be viewed as a sort of "unit of work", a building block that has inputs/outputs and does an elementary part of the work.
-Each process runs it's own docker container.
-By connecting the appropriate outputs to inputs between a set of processes, one can create workflows.
-A workflow can then be executed on the uderlying cluster.
+This tutorial will walk through the creation and execution of a simple workflow in the Automated Service Builder (ASB), which can serve as a starting template for future workflows.
 
-In this example the maximum normalized difference vegetation index (NDVI) will be calculated. 
-The formula for NDVI is (B8-B4)/(B8+B4), where the input bands B4 is the red and B8 of the near-infrared part of the reflectance spectrum. 
-The inputs will be taken from the Sentinel L2A observations and NDVI needs to be computed at every pixel in the area of interest. 
-Finally the max NDVI image is obtained by taking the maximum over a given time period.   
+The ASB interface is built around the concept of processes and workflows, just like building a Lego set.
+A process can be viewed as a sort of "unit of work", a building block that has inputs/outputs and does an elementary part of the job.
+Each process runs in it's own docker container. 
+A workflow is a collection of processes interconnected by their inputs and outputs, which then can be executed on the uderlying cluster.
+
+In this example we will develop a workflow for calculating the maximum normalized difference vegetation index (NDVI). 
+The formula for NDVI is (B8-B4)/(B8+B4), where the input bands are B4: red and B8: near-infrared part of the reflectance spectrum. 
+Source data will be queried from VITO's Terrascope catalog by specifying vector representation of the area of interest, start/end dates and collection.
+We will use the Sentinel-2 L2A collection, which is divided into so-called tiles and taken dates. 
+Hence the catalog will return a list of string pairs (B4 and B8) overlapping with our area of interest. 
+NDVI will be computed computed at every pixel in the area of interest in a parallel fashion by processing each image pairs independently. 
+Finally, the max NDVI image is obtained by taking the pixel-level maximum over the time period.   
 
 ### Pre-requisites
 
-You have read the following parts of the documentation:
+Please read the following parts of the documentation first:
 
 * nomenclature: [https://mep-wps.vgt.vito.be/docs/user/index.html#definitions-and-acronyms](https://mep-wps.vgt.vito.be/docs/user/index.html#definitions-and-acronyms)
 * how to manage processes: [https://mep-wps.vgt.vito.be/docs/user/index.html#processes-management](https://mep-wps.vgt.vito.be/docs/user/index.html#processes-management)
@@ -29,28 +31,42 @@ And at least basic knowledge of Python language, since the codes used in this tu
  
 ### What are we going to do
 
-The straightforward approach is to first query the sources, then compute NDVI in a distributed fashion and finally combine the parts together using maximum function. 
-Within the ASB interface this requires five processes:
+In terms of splitting the work into units, the straightforward approach is to first query the sources, then compute NDVI in a distributed fashion and finally combine the parts together using maximum function. 
+Within the ASB interface this would require five processes:
 
 1. Product query: obtains the list of the corresponding B4 and B8 image pairs
-1. Dynamic splitter: parallelizes the work based on the query results and launches the NDVI calculators
+1. Dynamic list splitter: parallelizes the work based on the query results and launches the NDVI calculators
 1. NDVI calculator: computes NDVI over an image pair
 1. Joiner: waits for all NDVI calculators to finish
 1. Collect_and_max: combines the outputs of the NDVI calculators 
 
+The advantage of the process/workflow system is the reusability of the processes in many different workflows. 
+In fact 3 out of the 5 processes are readily available: product query, dynamic list splitter and the joiner processes are alreadz provided on the platform and will be reused.
+
+Once we are done, we will combine those processes into a workflow and provide default inputs where it makes sense.
+
+Finally, we execute the workflow to perform an actual calculation.
+
 ### Creating/reusing the processes
 
-Login to the portal: [https://mep-wps.vgt.vito.be](https://mep-wps.vgt.vito.be)
-
-The advantage of the process/workflow system is the reusability of the processes in many different workflows. In fact 3 out of the 5 processes are readily available. 
-The product_query, dynamic list splitter and the oin processes will be reused.
+Login to the portal: [https://mep-wps.vgt.vito.be](https://mep-wps.vgt.vito.be).
 
 #### Product query
 
 As mentioned, one does not have to implement the search, rather reuse the query_product process developed by VITO.
-It can be used to search in the Terrascope database [terrascope.be](terrascope.be) provided by VITO.
-Given the area of interest in WKT string, the date range, collection id and band names it returns a list of file names (where they are in the file system).
+It can be used to search in the Terrascope database [terrascope.be](terrascope.be).
+Given the area of interest in WKT string, the date range, collection id and band names: returns a double list of file names (where those are on the file system).
 These are the individual images that overlap with the area of interest within the date range.
+
+We will use the following inputs:
+
+* collection: urn:eop:VITO:TERRASCOPE_S2_TOC_V2  (Sentinel2 L2A images mirrored by Terrascope)
+* date range: {"start":"2018-06-25T00:00:00", "end":"2018-06-30T00:00:00"} (JSON string covering just a few days)
+* WKT: POLYGON((4.665785 51.110600, 4.350147 51.111254, 4.344939 50.990762, 4.664744 50.990762, 4.665785 51.110600)) (small area around the Belgian city called Mechelen)
+* bands: ["B04","B08"] (red and NIR bands as alread mentioned before)
+
+<img src="resources/demo_gettingstarted/roi.png" width="400"/><br><em>Figure: Area of interest</em>
+
 
 <br>
 <ins>
@@ -67,15 +83,6 @@ In this case this represents a list of two files:
 
 </ins>
 <br>
-
-We will use the following inputs:
-
-* collection: urn:eop:VITO:TERRASCOPE_S2_TOC_V2  (Sentinel2 L2A images mirrored by Terrascope)
-* date range: {"start":"2018-06-25T00:00:00", "end":"2018-06-30T00:00:00"} (JSON string covering just a few days)
-* WKT: POLYGON((4.665785 51.110600, 4.350147 51.111254, 4.344939 50.990762, 4.664744 50.990762, 4.665785 51.110600)) (small area around the Belgian city called Mechelen)
-* bands: ["B04","B08"] (red and NIR bands as alread mentioned before)
-
-<img src="resources/demo_gettingstarted/roi.png" width="400"/><br><em>Figure: Area of interest</em>
 
 #### Dynamic list splitter
 
