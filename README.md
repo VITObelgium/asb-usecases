@@ -465,6 +465,7 @@ The complete code process wrapper for the collector looks like this:
                 result=rxr.to_dataset('band')
                 result.to_netcdf(str(Path(out_dir,outputFile)), engine='h5netcdf')    
                 logger.info("Combined result saved to: "+str(Path(out_dir,outputFile)))
+                outputFile=str(Path(str(out_dir).replace('/scratch/','/'),'outputs',outputFile))
             else: 
                 outputFile="<EMPTY>"
                 logger.info("Combined result is empty, skipping")
@@ -508,6 +509,7 @@ The rest is really just saving the result to file or communicate if the result i
             rxr=rxr.transpose(*(l+['y','x']))
         result=rxr.to_dataset('band')
         result.to_netcdf(str(Path(out_dir,outputFile)), engine='h5netcdf')    
+        outputFile=str(Path(str(out_dir).replace('/scratch/','/'),'outputs',outputFile))
     else: 
         outputFile="<EMPTY>"
 
@@ -588,13 +590,31 @@ The execution summary will print out various details of the job, such as:
 * Execution graph
 * Timing of the processes
 
-It also provides a link to download results saved to file 
-<ins>
-(It is broken right now, have to grab it from the user VM! In fact it may be removed!)
-</ins>
-:
-
 <img src="resources/demo_gettingstarted/execute_report.png" width="800"/><br><em>Figure: execution report</em>
+
+An important output is the *result* field of *collect_and_max*, which contains the path to the file with the merged results.
+Currently, there are two ways to access this file:
+
+* by logging into the Terrascope user VM, which have to be requested separately at [terrascope.be](terrascope.be)
+* or by copying via SFTP 
+
+We will use the second option. Since this tutorial was written on linux, the simplest is to use the following command from a terminal: 
+
+    sftp <USER>@probavmepftp.vgt.vito.be:/Private/<USER>/<RESULT_FIELD> <PATH_TO>/<DESTINATION>
+
+Where:
+
+* <USER>: user name
+* <RESULT_FIELD>: the contents of the result field
+* <PATH_TO>/<DESTINATION>: the path and filename on your computer where to save the file to.
+
+Note: if you don't feel comfortable using terminal, there are many graphical SFTP clients (WinSCP,gFTP,...) available.
+
+In this workflow the merged result is saved as NetCDF, which can for example be visualized with QGIS:
+
+    qgis <PATH_TO>/<DESTINATION> 
+
+<img src="resources/demo_gettingstarted/result_final.png" width="800"/><br><em>Figure: final result, maximum NDVI</em>
 
 That's it, well done!
 
@@ -602,9 +622,7 @@ That's it, well done!
 
 In this concrete example the MEP query resulted in 5 B4/B8 pairs of images. 
 Those are from the Sentinel-2 tiles 31UES and 31UFS at various days in the range and were processed independently in a parallel fashion, thanks to the *dynamic splitter*.
-Finally, the *max collector* produced this combined result from the parts:
-
-<img src="resources/demo_gettingstarted/result_final.png" width="800"/><br><em>Figure: final result, maximum NDVI</em>
+Finally, the *max collector* produced this combined result from the parts.
 
 ### What we have done:
 

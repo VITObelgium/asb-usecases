@@ -4,6 +4,8 @@ import logging
 import xarray
 from pathlib import Path
 import glob
+import sys
+import os
 
 # --------------------------------------------------------------------------------------
 # Save this code in file "process_wrapper.py" and adapt as indicated in inline comments.
@@ -81,24 +83,10 @@ def execute(out_dir, status, outputFile):
             result=rxr.to_dataset('band')
             result.to_netcdf(str(Path(out_dir,outputFile)), engine='h5netcdf')    
             logger.info("Combined result saved to: "+str(Path(out_dir,outputFile)))
+            outputFile=str(Path(str(out_dir).replace('/scratch/','/'),'outputs',outputFile))
         else: 
             outputFile="<EMPTY>"
             logger.info("Combined result is empty, skipping")
-
-# ls
-# /scratch/processor-run-2020_11_27_16_42_05_399463z_banyait_command_runner/wps-run-banyait-command-runner-v3-0ebb4462-a19b-409c-86bc-1d7780ec1881/..
-# wps-run-banyait-command-runner-v3-0ebb4462-a19b-409c-86bc-1d7780ec1881
-# ;
-
-    
-
-# ls
-# /data/outputs/
-# processor-run-2020_11_26_17_30_46_096548z_banyait_demo_gettingstarted
-# processor-run-2020_11_26_17_30_46_096548z_banyait_demo_gettingstarted_child
-# processor-run-2020_11_27_16_34_27_667971z_banyait_demo_gettingstarted
-# processor-run-2020_11_27_16_34_27_667971z_banyait_demo_gettingstarted_child
-# processor-run-2020_11_27_16_42_05_399463z_banyait_command_runner
 
     logger.info("Finished...")
 
