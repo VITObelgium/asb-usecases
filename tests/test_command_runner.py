@@ -1,8 +1,3 @@
-'''
-Created on Apr 29, 2020
-
-@author: banyait
-'''
 import unittest
 from asb_usecases.wrappers.command_runner import process_wrapper
 

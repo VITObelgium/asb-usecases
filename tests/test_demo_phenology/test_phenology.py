@@ -1,8 +1,3 @@
-'''
-Created on May 1, 2020
-
-@author: banyait
-'''
 import unittest
 from demo_phenology.step2_phenology import process_wrapper
 from pprint import pprint

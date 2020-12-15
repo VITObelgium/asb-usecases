@@ -1,8 +1,3 @@
-'''
-Created on May 5, 2020
-
-@author: banyait
-'''
 import rasterio
 from shapely.geometry.geo import shape
 from rasterio.crs import CRS

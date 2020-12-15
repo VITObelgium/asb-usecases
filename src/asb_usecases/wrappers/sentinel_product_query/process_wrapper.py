@@ -57,7 +57,6 @@ def execute(out_dir, fields_geojson, daterange_json):
 
     logger.info("Starting...")
     
-    #sys.path.append('/data/public/banyait/code')
     from asb_usecases.logic.sentinel_product_query.query_creodias import CreoDiasQuery
     from asb_usecases.logic.sentinel_product_query.query_copernicus import CopernicusQuery
 

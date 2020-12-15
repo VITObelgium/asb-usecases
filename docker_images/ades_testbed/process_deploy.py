@@ -1,8 +1,3 @@
-'''
-Created on Sep 7, 2020
-
-@author: banyait
-'''
 import requests
 
 url='https://mep-wps.vgt.vito.be/ades/rest'

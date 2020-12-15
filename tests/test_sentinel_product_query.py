@@ -1,8 +1,3 @@
-'''
-Created on May 1, 2020
-
-@author: banyait
-'''
 import unittest
 import pprint
 from asb_usecases.wrappers.sentinel_product_query import process_wrapper

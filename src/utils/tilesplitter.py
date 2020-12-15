@@ -1,8 +1,3 @@
-'''
-Created on May 5, 2020
-
-@author: banyait
-'''
 from sentinelhub.areas import TileSplitter
 from sentinelhub.constants import DataSource, CRS
 import json

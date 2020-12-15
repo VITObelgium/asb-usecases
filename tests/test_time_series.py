@@ -1,8 +1,3 @@
-'''
-Created on May 1, 2020
-
-@author: banyait
-'''
 import unittest
 from asb_usecases.wrappers.time_series import process_wrapper
 import pprint

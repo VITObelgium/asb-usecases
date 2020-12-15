@@ -1,9 +1,3 @@
-'''
-Created on May 7, 2020
-
-@author: banyait
-'''
-
 import pandas as pd
 import matplotlib.pyplot as plt
 from pandas.core.tools.datetimes import to_datetime

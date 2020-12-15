@@ -1,8 +1,3 @@
-'''
-Created on May 4, 2020
-
-@author: banyait
-'''
 from abc import ABC, abstractmethod
 from collections import OrderedDict
 import logging

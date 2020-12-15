@@ -1,8 +1,3 @@
-'''
-Created on Sep 7, 2020
-
-@author: banyait
-'''
 import unittest
 import requests
 import json

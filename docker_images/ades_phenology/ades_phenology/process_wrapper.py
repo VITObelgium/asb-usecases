@@ -60,8 +60,8 @@ def execute(out_dir, layer_id, field_geojson, daterange_json):
 
 #    openeo_url = 'http://openeo-dev.vgt.vito.be/openeo/1.0.0/'
     openeo_url = 'http://openeo.vgt.vito.be/openeo/1.0.0/'
-    openeo_user='banyait'
-    openeo_pass='banyait123'
+    openeo_user=os.environ.get('USER', 'anonymous')
+    openeo_pass=openeo_user+'123'
     #logfile="/data/public/"+openeo_user+"/garbage/"+str(uuid.uuid4().hex)+".log"
 
     def log_everywhere(msg:str):

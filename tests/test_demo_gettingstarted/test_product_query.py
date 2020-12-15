@@ -1,8 +1,3 @@
-'''
-Created on Nov 12, 2020
-
-@author: banyait
-'''
 import unittest
 import demo_gettingstarted.product_query.process_wrapper
 import demo_gettingstarted.compute_maxndvi.process_wrapper

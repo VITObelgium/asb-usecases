@@ -1,8 +1,3 @@
-'''
-Created on Mar 17, 2020
-
-@author: banyait
-'''
 layer=QgsVectorLayer('Polygon','poly',"memory")#,crs=EPSG(4326))
 pr = layer.dataProvider() 
 poly = QgsFeature()

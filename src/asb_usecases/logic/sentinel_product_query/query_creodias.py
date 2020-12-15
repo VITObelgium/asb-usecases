@@ -1,8 +1,3 @@
-'''
-Created on Apr 11, 2020
-
-@author: banyait
-'''
 from asb_usecases.logic.sentinel_product_query.base_query import BaseQuery
 from sentinelsat.sentinel import geojson_to_wkt
 from datetime import datetime

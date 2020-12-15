@@ -58,7 +58,6 @@ def execute(out_dir, segmentedfiles_json):
         logger.info("Starting...")
         logger.info("Contents of out_dir: "+str(os.listdir(path=str(out_dir))))
     
-        #sys.path.append('/data/public/banyait/code')
         from parcel.feature.segmentation import raster2polygon
     
         logger.info("Loading json input(s)...")
